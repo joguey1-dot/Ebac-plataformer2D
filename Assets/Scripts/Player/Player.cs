@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEditor.Experimental.GraphView;
 
 public class Player : MonoBehaviour
 {
@@ -20,6 +21,11 @@ public class Player : MonoBehaviour
     public Ease Ease = Ease.OutBack;
 
 
+    [Header("Animation player")]
+    public string boolRun = "Run";
+    public Animator animator;
+    public float playerSwipeDuration = .1f;
+
     private float _currentSpeed;
 
     private void Update()
@@ -31,19 +37,43 @@ public class Player : MonoBehaviour
     private void handleMoviments()
     {
         if (Input.GetKey(KeyCode.LeftControl))
+        {
             _currentSpeed = speedRun;
+            animator.speed = 2f;
+        }
         else
+        {
             _currentSpeed = speed;
+            animator.speed = 1f;
+        }
+
 
         if (Input.GetKey(KeyCode.RightArrow))
-        {    
+        {
             myRigidbody.velocity = new Vector2(_currentSpeed, myRigidbody.velocity.y);
+            if (myRigidbody.transform.localScale.x != -1)
+            {
+                myRigidbody.transform.DOScaleX(1, playerSwipeDuration);
+            }
+            animator.SetBool(boolRun, true);
         }
 
         else if (Input.GetKey(KeyCode.LeftArrow))
-        {         
+        {
             myRigidbody.velocity = new Vector2(-_currentSpeed, myRigidbody.velocity.y);
+            if (myRigidbody.transform.localScale.x != -1)
+            {
+                myRigidbody.transform.DOScaleX(-1, playerSwipeDuration); 
+            }
+            animator.SetBool(boolRun, true);
+            
+
         }
+        else
+        {
+            animator.SetBool(boolRun, false);
+        }
+
 
         if (myRigidbody.velocity.x > 0)
         {
@@ -51,7 +81,7 @@ public class Player : MonoBehaviour
         }
         else if (myRigidbody.velocity.x < 0)
         {
-            myRigidbody.velocity -= friction;   
+            myRigidbody.velocity -= friction;
         }
 
     }
